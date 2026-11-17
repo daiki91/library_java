@@ -9,28 +9,16 @@ public class Verification {
 	Connec cn=new Connec();
 	
 	public boolean verifier(String titre){
-		boolean test=false;
-		String title=null;
-		String qr="select titre from livre where disponible='OUI' ";
+		String qr="select 1 from livre where titre=? and disponible='OUI'";
 		try{
-			st=cn.connecion().createStatement();
-			rst=st.executeQuery(qr);
-			while(rst.next()||test==true){
-				title=rst.getString("titre");
-				if(title.equals(titre)){
-					test=true;
-				}
-				
-			}
-			
+			PreparedStatement ps=cn.connecion().prepareStatement(qr);
+			ps.setString(1,titre);
+			rst=ps.executeQuery();
+			return rst.next();
 		}
 		catch(SQLException ex){
-			
+			return false;
 		}
-		
-	
-		return test; 
-		
 	}
 
 }

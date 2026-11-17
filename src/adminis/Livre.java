@@ -150,12 +150,13 @@ public class Livre extends JFrame implements ActionListener {
 		if(e.getSource()==bt1){
 		String a,b;
 		a=tf1.getText();b=tf2.getText();
-		String qr="insert into livre(idlivre,titre,disponible)"
-				+ "values('"+a+"','"+b+"','OUI')";
+		String qr="insert into livre(idlivre,titre,disponible) values(?,?,'OUI')";
 		try{
-			st=cn.connecion().createStatement();
+			PreparedStatement ps=cn.connecion().prepareStatement(qr);
+			ps.setString(1,a);
+			ps.setString(2,b);
 			if(JOptionPane.showConfirmDialog(this,"voulez vous inserer?",null,JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
-				st.executeUpdate(qr);
+				ps.executeUpdate();
 				JOptionPane.showMessageDialog(this,"Insertion reussie!");
 			}
 		}
@@ -167,11 +168,12 @@ public class Livre extends JFrame implements ActionListener {
 		if(e.getSource()==bt2){
 			String a;
 			a=tf1.getText();
-			String qr="delete from livre where idlivre='"+a+"'";
+			String qr="delete from livre where idlivre=?";
 			try{
-				st=cn.connecion().createStatement();
+				PreparedStatement ps=cn.connecion().prepareStatement(qr);
+				ps.setString(1,a);
 				if(JOptionPane.showConfirmDialog(this,"voulez vous supprimer?",null,JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
-					st.executeUpdate(qr);
+					ps.executeUpdate();
 					JOptionPane.showMessageDialog(this,"suppression reussie!");
 				}
 			}
@@ -182,10 +184,11 @@ public class Livre extends JFrame implements ActionListener {
 		 if(e.getSource()==bt4){
 	    	  String a;
 				a=tf1.getText();
-				String qr="select * from livre where idlivre='"+a+"'";
+				String qr="select * from livre where idlivre=?";
 				try{
-					st=cn.connecion().createStatement();
-					rst=st.executeQuery(qr);
+					PreparedStatement ps=cn.connecion().prepareStatement(qr);
+					ps.setString(1,a);
+					rst=ps.executeQuery();
 					if(rst.next()){
 						tf2.setText(rst.getString("titre"));
 					}
@@ -207,11 +210,13 @@ public class Livre extends JFrame implements ActionListener {
 		if(e.getSource()==bt5){
 			String a,b;
 			a=tf1.getText();b=tf2.getText();
-			String qr="update livre set titre='"+b+"' where idlivre='"+a+"'";
+			String qr="update livre set titre=? where idlivre=?";
 			try{
-				st=cn.connecion().createStatement();
+				PreparedStatement ps=cn.connecion().prepareStatement(qr);
+				ps.setString(1,b);
+				ps.setString(2,a);
 				if(JOptionPane.showConfirmDialog(this,"voulez vous modifier?",null,JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
-					st.executeUpdate(qr);
+					ps.executeUpdate();
 					JOptionPane.showMessageDialog(this,"modification reussie!");
 				}
 			}

@@ -219,7 +219,7 @@ catch(SQLException ex){
 		String b,c;
 		b=jcb1.getSelectedItem().toString();
 		c=jcb2.getSelectedItem().toString();
-		String qr="select * from pret where titre='"+b+"' or nomUtilisateur='"+c+"'";
+		String qr="select * from pret where titre=? or nomUtilisateur=?";
 		
 		//tablemodel2
 				DefaultTableModel df2=new DefaultTableModel();
@@ -228,8 +228,10 @@ catch(SQLException ex){
 				df2.addColumn("Emprunteur");
 				tb2.setModel(df2);
 		try{
-			st=cn.connecion().createStatement();
-			rst=st.executeQuery(qr);
+			PreparedStatement ps=cn.connecion().prepareStatement(qr);
+			ps.setString(1,b);
+			ps.setString(2,c);
+			rst=ps.executeQuery();
 			while(rst.next()){
 			df2.addRow(new Object[]{
 					rst.getString("idlivre"),rst.getString("titre"),rst.getString("nomUtilisateur")

@@ -154,11 +154,13 @@ catch(SQLException ex){
 		if(e.getSource()==jb){
 			String a,b;
 			a=tf1.getText();b=jcb.getSelectedItem().toString();
-			String qr="update livre set disponible='NON',idutilisateur='"+a+"' where titre='"+b+"'";
+			String qr="update livre set disponible='NON',idutilisateur=? where titre=?";
 			try{
-				st=cn.connecion().createStatement();
+				PreparedStatement ps=cn.connecion().prepareStatement(qr);
+				ps.setString(1,a);
+				ps.setString(2,b);
 				if(JOptionPane.showConfirmDialog(this,"ajouter?",null,JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
-					st.executeUpdate(qr);
+					ps.executeUpdate();
 					JOptionPane.showMessageDialog(this,"validaton reussie!");
 				}
 				
@@ -171,11 +173,13 @@ catch(SQLException ex){
 			String a,b;
 			a=tf5.getText();
 			b=jcb2.getSelectedItem().toString();
-			String qr="update livre set disponible='OUI',idutilisateur=NULL where idutilisateur='"+a+"' and titre='"+b+"'";
+			String qr="update livre set disponible='OUI',idutilisateur=NULL where idutilisateur=? and titre=?";
 			try{
-				st=cn.connecion().createStatement();
+				PreparedStatement ps=cn.connecion().prepareStatement(qr);
+				ps.setString(1,a);
+				ps.setString(2,b);
 				if(JOptionPane.showConfirmDialog(this,"ajouter?",null,JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
-					st.executeUpdate(qr);
+					ps.executeUpdate();
 					JOptionPane.showMessageDialog(this,"validaton reussie!");
 				}
 				

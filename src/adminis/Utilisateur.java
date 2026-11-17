@@ -146,11 +146,13 @@ public class Utilisateur extends JFrame implements ActionListener {
 		if(e.getSource()==bt1){
 		String a,b;
 		a=tf1.getText();b=tf2.getText();
-		String qr="insert into utilisateur values('"+a+"','"+b+"')";
+		String qr="insert into utilisateur values(?,?)";
 		try{
-			st=cn.connecion().createStatement();
+			PreparedStatement ps=cn.connecion().prepareStatement(qr);
+			ps.setString(1,a);
+			ps.setString(2,b);
 			if(JOptionPane.showConfirmDialog(this,"voulez vous inserer?",null,JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
-				st.executeUpdate(qr);
+				ps.executeUpdate();
 				JOptionPane.showMessageDialog(this,"Insertion reussie!");
 			}
 		}
@@ -162,11 +164,12 @@ public class Utilisateur extends JFrame implements ActionListener {
 		if(e.getSource()==bt2){
 			String a;
 			a=tf1.getText();
-			String qr="delete from utilisateur where idutilisateur='"+a+"'";
+			String qr="delete from utilisateur where idutilisateur=?";
 			try{
-				st=cn.connecion().createStatement();
+				PreparedStatement ps=cn.connecion().prepareStatement(qr);
+				ps.setString(1,a);
 				if(JOptionPane.showConfirmDialog(this,"voulez vous supprimer?",null,JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
-					st.executeUpdate(qr);
+					ps.executeUpdate();
 					JOptionPane.showMessageDialog(this,"suppression reussie!");
 				}
 			}
@@ -178,10 +181,11 @@ public class Utilisateur extends JFrame implements ActionListener {
       if(e.getSource()==bt4){
     	  String a;
 			a=tf1.getText();
-			String qr="select * from utilisateur where idutilisateur='"+a+"'";
+			String qr="select * from utilisateur where idutilisateur=?";
 			try{
-				st=cn.connecion().createStatement();
-				rst=st.executeQuery(qr);
+				PreparedStatement ps=cn.connecion().prepareStatement(qr);
+				ps.setString(1,a);
+				rst=ps.executeQuery();
 				if(rst.next()){
 					tf2.setText(rst.getString("nomUtilisateur"));
 				}
@@ -210,11 +214,13 @@ public class Utilisateur extends JFrame implements ActionListener {
 		if(e.getSource()==bt6){
 			String a,b;
 			a=tf1.getText();b=tf2.getText();
-			String qr="update utilisateur set nomUtilisateur='"+b+"' where idutilisateur='"+a+"'";
+			String qr="update utilisateur set nomUtilisateur=? where idutilisateur=?";
 			try{
-				st=cn.connecion().createStatement();
+				PreparedStatement ps=cn.connecion().prepareStatement(qr);
+				ps.setString(1,b);
+				ps.setString(2,a);
 				if(JOptionPane.showConfirmDialog(this,"voulez vous modifier?",null,JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
-					st.executeUpdate(qr);
+					ps.executeUpdate();
 					JOptionPane.showMessageDialog(this,"modification reussie!");
 				}
 			}
