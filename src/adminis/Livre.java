@@ -30,7 +30,7 @@ public class Livre extends JFrame implements ActionListener {
 	JScrollPane js;
 	
 	public Livre(){
-		this.setTitle("biblio_esp(from DGI)");
+		this.setTitle("GesBiblio | Catalogue");
 		this.setSize(700,400);
 		this.setLocationRelativeTo(null);
 		JPanel pn=new JPanel();
@@ -38,24 +38,24 @@ public class Livre extends JFrame implements ActionListener {
 		pn.setBackground(new Color(0,200,200));
 		add(pn);
 		//titre
-				lbtitre=new JLabel("Enregistrement des livres");
+				lbtitre=new JLabel("Catalogue des livres");
 				lbtitre.setBounds(10,10,300,30);
 				lbtitre.setFont(new Font("Arial",Font.BOLD,16));
 				pn.add(lbtitre);
 		//label
-		lb1=new JLabel("Identifiant");
+		lb1=new JLabel("N° livre");
 		lb1.setBounds(30,50,100,30);
 		pn.add(lb1);
 		tf1=new JTextField();
-		tf1.setBounds(100,50,100,30);
+		tf1.setBounds(130,50,100,30);
 		pn.add(tf1);
 		//
-		lb2=new JLabel("Titre");
+		lb2=new JLabel("Titre du livre");
 		lb2.setBounds(30,90,100,30);
 		pn.add(lb2);
 		
 		tf2=new JTextField();
-		tf2.setBounds(100,90,200,30);
+		tf2.setBounds(130,90,170,30);
 		pn.add(tf2);
 		//
 		pn.add(tf2);
@@ -65,22 +65,22 @@ public class Livre extends JFrame implements ActionListener {
 		bt1.addActionListener(this);
 		pn.add(bt1);
 		
-		bt2=new JButton("Suppression");
+		bt2=new JButton("Supprimer");
 		bt2.setBounds(50,170,110,30);
 		bt2.addActionListener(this);
 		pn.add(bt2);
 		
-		bt4=new JButton("Recherche");
-		bt4.setBounds(200,50,100,30);
+		bt4=new JButton("Rechercher");
+		bt4.setBounds(230,50,80,30);
 		bt4.addActionListener(this);
 		pn.add(bt4);
 		
-		bt3=new JButton("Requetes");
+		bt3=new JButton("Suivi");
 		bt3.setBounds(50,240,110,30);
 		bt3.addActionListener(this);
 		pn.add(bt3);
 		
-		bt5=new JButton("Modification");
+		bt5=new JButton("Modifier");
 		bt5.setBounds(50,205,110,30);
 		bt5.addActionListener(this);
 		pn.add(bt5);
@@ -90,12 +90,12 @@ public class Livre extends JFrame implements ActionListener {
 		bt6.addActionListener(this);
 		pn.add(bt6);
 		
-		butilisateur=new JButton("Utilisateur");
+		butilisateur=new JButton("Adhérents");
 		butilisateur.setBounds(180,280,110,30);
 		butilisateur.addActionListener(this);
 		pn.add(butilisateur);
 		
-		bpret=new JButton("Emprunt");
+		bpret=new JButton("Prêts");
 		bpret.setBounds(180,240,110,30);
 		bpret.addActionListener(this);
 		pn.add(bpret);
@@ -128,6 +128,9 @@ public class Livre extends JFrame implements ActionListener {
 
 		
 		this.setResizable(false);
+		tf1.setToolTipText("Saisissez le numéro unique du livre.");
+		tf2.setToolTipText("Saisissez le titre tel qu'il doit apparaître au catalogue.");
+		LegacyUi.appliquer(this, pn, "Catalogue des livres");
 		
 	}
 	public void init(){
@@ -155,13 +158,13 @@ public class Livre extends JFrame implements ActionListener {
 			PreparedStatement ps=cn.connecion().prepareStatement(qr);
 			ps.setString(1,a);
 			ps.setString(2,b);
-			if(JOptionPane.showConfirmDialog(this,"voulez vous inserer?",null,JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
+			if(JOptionPane.showConfirmDialog(this,"Ajouter « "+b+" » au catalogue ?","Confirmer l'ajout",JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
 				ps.executeUpdate();
-				JOptionPane.showMessageDialog(this,"Insertion reussie!");
+				JOptionPane.showMessageDialog(this,"Le livre a été ajouté au catalogue.");
 			}
 		}
 		catch(SQLException ex){
-			JOptionPane.showMessageDialog(this,"Erreur,insertion impossible!",null,JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this,"Impossible d'ajouter le livre.\n"+ex.getMessage(),"Erreur",JOptionPane.ERROR_MESSAGE);
 		}
 			
 		}
@@ -172,13 +175,13 @@ public class Livre extends JFrame implements ActionListener {
 			try{
 				PreparedStatement ps=cn.connecion().prepareStatement(qr);
 				ps.setString(1,a);
-				if(JOptionPane.showConfirmDialog(this,"voulez vous supprimer?",null,JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
+				if(JOptionPane.showConfirmDialog(this,"Supprimer le livre n° "+a+" ?","Confirmer la suppression",JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
 					ps.executeUpdate();
-					JOptionPane.showMessageDialog(this,"suppression reussie!");
+					JOptionPane.showMessageDialog(this,"La demande de suppression a été traitée.");
 				}
 			}
 			catch(SQLException ex){
-				JOptionPane.showMessageDialog(this,"Erreur,supression impossible!",null,JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this,"Impossible de supprimer ce livre. Il est peut-être encore emprunté.\n"+ex.getMessage(),"Erreur",JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		 if(e.getSource()==bt4){
@@ -193,10 +196,10 @@ public class Livre extends JFrame implements ActionListener {
 						tf2.setText(rst.getString("titre"));
 					}
 					else
-						JOptionPane.showMessageDialog(this,"introuvable!",null,JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(this,"Aucun livre ne correspond à ce numéro.","Livre introuvable",JOptionPane.INFORMATION_MESSAGE);
 				}
 				catch(SQLException ex){
-				
+					JOptionPane.showMessageDialog(this,"La recherche a échoué.\n"+ex.getMessage(),"Erreur",JOptionPane.ERROR_MESSAGE);
 				}
 	    	  
 	      }
@@ -215,13 +218,13 @@ public class Livre extends JFrame implements ActionListener {
 				PreparedStatement ps=cn.connecion().prepareStatement(qr);
 				ps.setString(1,b);
 				ps.setString(2,a);
-				if(JOptionPane.showConfirmDialog(this,"voulez vous modifier?",null,JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
+				if(JOptionPane.showConfirmDialog(this,"Enregistrer le nouveau titre pour le livre n° "+a+" ?","Confirmer la modification",JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
 					ps.executeUpdate();
-					JOptionPane.showMessageDialog(this,"modification reussie!");
+					JOptionPane.showMessageDialog(this,"Le titre a été modifié.");
 				}
 			}
 			catch(SQLException ex){
-				JOptionPane.showMessageDialog(this,"Erreur,modification impossible!",null,JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this,"Impossible de modifier ce livre.\n"+ex.getMessage(),"Erreur",JOptionPane.ERROR_MESSAGE);
 			}
 				
 			}

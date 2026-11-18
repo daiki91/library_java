@@ -33,7 +33,7 @@ public class Requete extends JFrame implements ActionListener {
 	Connec cn=new Connec();
 	
 	public Requete(){
-		this.setTitle("biblio_esp(from DGI)");
+		this.setTitle("GesBiblio | Suivi des prêts");
 		this.setSize(640,600);
 		this.setLocationRelativeTo(null);
 		JPanel pn=new JPanel();
@@ -41,7 +41,7 @@ public class Requete extends JFrame implements ActionListener {
 		pn.setBackground(new Color(0,200,200));
 		add(pn);
 		//lb
-		lb1=new JLabel("Livres emprunt�s");
+		lb1=new JLabel("Prêts en cours");
 		lb1.setBounds(160,10,200,30);
 		lb1.setFont(new Font("Arial",Font.BOLD,20));
 		//lb1.setForeground(Color.BLUE);
@@ -84,14 +84,14 @@ catch(SQLException ex){
 }
 		pn.add(jcb2);
 		//button
-				bt1=new JButton("Chercher");
+				bt1=new JButton("Rechercher");
 				bt1.setBounds(400,50,100,25);
 				bt1.addActionListener(this);
 				pn.add(bt1);
 	//Livre disponible
 				//lb
-				lb2=new JLabel("Livres disponibles");
-				lb2.setBounds(160,290,200,30);
+				lb2=new JLabel("Disponibilité des livres");
+				lb2.setBounds(150,290,300,30);
 				lb2.setFont(new Font("Arial",Font.BOLD,20));
 				//lb2.setForeground(Color.BLUE);
 				pn.add(lb2);
@@ -113,22 +113,22 @@ catch(SQLException ex){
 		}
 				pn.add(jcb3);
 		//bt
-		bt2=new JButton("V�rifier");
-		bt2.setBounds(210,330,100,25);
+		bt2=new JButton("Vérifier la disponibilité");
+		bt2.setBounds(210,330,190,28);
 		bt2.addActionListener(this);
 		pn.add(bt2);
 		//bt
-				bt3=new JButton("Utilisateur");
+				bt3=new JButton("Adhérents");
 				bt3.setBounds(50,500,100,25);
 				bt3.addActionListener(this);
 				pn.add(bt3);
 		//bt
-				bt4=new JButton("Emprunt");
+				bt4=new JButton("Prêts");
 				bt4.setBounds(180,500,100,25);
 				bt4.addActionListener(this);
 				pn.add(bt4);
 				//bt
-				bt5=new JButton("Livre");
+				bt5=new JButton("Catalogue");
 				bt5.setBounds(300,500,100,25);
 				bt5.addActionListener(this);
 				pn.add(bt5);
@@ -155,6 +155,9 @@ catch(SQLException ex){
 		catch(SQLException ex){
 			
 		}
+		jcb1.setToolTipText("Filtrer les prêts par titre ; laissez vide pour ignorer ce critère.");
+		jcb2.setToolTipText("Filtrer les prêts par adhérent ; laissez vide pour ignorer ce critère.");
+		jcb3.setToolTipText("Choisissez le titre dont vous souhaitez vérifier la disponibilité.");
 		//tablemodel2
 		DefaultTableModel df2=new DefaultTableModel();
 		init2();
@@ -183,6 +186,7 @@ catch(SQLException ex){
 		catch(SQLException ex){
 			
 		}
+		LegacyUi.appliquer(this, pn, "Suivi des prêts et disponibilités");
 	}
 	//init
 	public void init(){
@@ -219,6 +223,10 @@ catch(SQLException ex){
 		String b,c;
 		b=jcb1.getSelectedItem().toString();
 		c=jcb2.getSelectedItem().toString();
+		if (b.isEmpty() && c.isEmpty()) {
+			JOptionPane.showMessageDialog(this,"Choisissez un titre ou un adhérent pour lancer la recherche.","Critère de recherche manquant",JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
 		String qr="select * from pret where titre=? or nomUtilisateur=?";
 		
 		//tablemodel2
@@ -237,20 +245,31 @@ catch(SQLException ex){
 					rst.getString("idlivre"),rst.getString("titre"),rst.getString("nomUtilisateur")
 			});	
 			}
+			if (df2.getRowCount() == 0) {
+				JOptionPane.showMessageDialog(this,"Aucun prêt ne correspond aux critères choisis.","Aucun résultat",JOptionPane.INFORMATION_MESSAGE);
+			}
 		}
 		catch(SQLException ex){
-			JOptionPane.showMessageDialog(this,"Erreur,insertion impossible!",null,JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this,"La recherche des prêts a échoué.\n"+ex.getMessage(),"Erreur",JOptionPane.ERROR_MESSAGE);
 		}
 			
 		}
 		if(e.getSource()==bt2){
+			if (jcb3.getSelectedItem() == null) {
+				JOptionPane.showMessageDialog(this,"Aucun livre disponible à vérifier pour le moment.","Catalogue vide",JOptionPane.INFORMATION_MESSAGE);
+				return;
+			}
 			String a=jcb3.getSelectedItem().toString();
 		  Verification vf=new Verification();
-			if(vf.verifier(a)==true){
-				JOptionPane.showMessageDialog(this,"DISPONIBLE");
+			try {
+				if(vf.verifier(a)){
+					JOptionPane.showMessageDialog(this,"Ce livre est disponible et peut être emprunté.","Livre disponible",JOptionPane.INFORMATION_MESSAGE);
+				} else {
+					JOptionPane.showMessageDialog(this,"Ce livre n'est pas disponible pour le moment.","Livre indisponible",JOptionPane.WARNING_MESSAGE);
+				}
+			} catch (SQLException ex) {
+				JOptionPane.showMessageDialog(this,"La disponibilité n'a pas pu être vérifiée.\n"+ex.getMessage(),"Erreur",JOptionPane.ERROR_MESSAGE);
 			}
-			else
-				JOptionPane.showMessageDialog(this,"INDISPONIBLE",null,JOptionPane.ERROR_MESSAGE);
 			
 		}
 		//utilisateur

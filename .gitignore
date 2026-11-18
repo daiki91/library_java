@@ -1,0 +1,3 @@
+# Identifiants MySQL locaux (créé au premier lancement de GesBiblio 2)
+config/db.properties
+target/
